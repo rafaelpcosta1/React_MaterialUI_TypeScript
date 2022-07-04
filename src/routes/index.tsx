@@ -13,11 +13,6 @@ export const AppRoutes = () => {
         icon: 'home',
         path: '/pagina-inicial',
         label: 'Página inicial',
-      },
-      {
-        icon: 'menu',
-        path: '/menu',
-        label: 'Menu',
       }
     ]);
   }, []);
