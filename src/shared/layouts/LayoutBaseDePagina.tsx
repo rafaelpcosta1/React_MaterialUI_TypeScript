@@ -21,7 +21,7 @@ export const LayoutBaseDePagina: React.FC<ILayoutBaseDePaginaProps> = ({ childre
     <Box height='100%' display='flex' flexDirection='column' gap={1}>
       <Box
         padding={1} gap={1}
-        display='flex' alignItems='center' justifyContent='center'
+        display='flex' alignItems='center'
         height={theme.spacing(smDown ? 6 : mdDown ? 8 : 12)}
       >
         {smDown && (
