@@ -6,7 +6,7 @@ export const HomePage = () => {
     <LayoutBaseDePagina
       titulo='Página inicial'
       barraDeFerramentas={(
-        <FerramentasDeDetalhe />
+        <FerramentasDeDetalhe mostrarBotaoSalavarEFechar />
       )}
     >
       Testando
