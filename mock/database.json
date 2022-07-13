@@ -7,12 +7,6 @@
       "nomeCompleto": "Jorge De Souza"
     },
     {
-      "id": 3,
-      "email": "ana@teste.com.br",
-      "cidadeId": 4,
-      "nomeCompleto": "Ana Gonçalves"
-    },
-    {
       "id": 4,
       "email": "thiago@teste.com.br",
       "cidadeId": 2,

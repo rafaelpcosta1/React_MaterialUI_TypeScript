@@ -47,7 +47,7 @@ export const ListagemDePessoas: React.FC = () => {
 
   }, [busca, pagina]);
 
-  const hendleDelete = (id: number) => {
+  const handleDelete = (id: number) => {
     if (confirm('Deseja realmente apagar o registro?')) {
       PessoasServices.deleteById(id)
         .then(result => {
@@ -71,7 +71,7 @@ export const ListagemDePessoas: React.FC = () => {
         <FerramentasDaListagem
           mostrarInputBusca
           textoDaBusca={busca}
-          textoBotaoNovo='Nova'
+          aoClicarEmNovo={() => navigate('/pessoas/detalhe/adicionar')}
           aoMudarTextoDaBusca={texto => setSerachParams({ busca: texto, pagina: '1' }, { replace: true })}
         />
       }
@@ -95,7 +95,7 @@ export const ListagemDePessoas: React.FC = () => {
                 <TableCell>{row.nomeCompleto}</TableCell>
                 <TableCell>{row.email}</TableCell>
                 <TableCell width={80}>
-                  <IconButton size='small' onClick={() => hendleDelete(row.id)}>
+                  <IconButton size='small' onClick={() => handleDelete(row.id)}>
                     <Icon>delete</Icon>
                   </IconButton>
                   <IconButton size='small' onClick={() => navigate(`/pessoas/detalhe/${row.id}`)}>
