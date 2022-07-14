@@ -1,6 +1,7 @@
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { LinearProgress } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
 
 import { PessoasServices } from '../../shared/services/api/pessoas/PessoasServices';
@@ -8,14 +9,25 @@ import { FerramentasDeDetalhe } from '../../shared/components';
 import { LayoutBaseDePagina } from '../../shared/layouts';
 import { VTextField } from '../../shared/forms';
 
+interface IFormData {
+  email: string;
+  cidadeId: string;
+  nomeCompleto: string;
+}
 
 export const DetalheDePessoas: React.FC = () => {
+  // Variaveis constantes utilizada para vavegar entre as paginas e fornecer o ID
   const { id } = useParams<'id'>();
   const navigate = useNavigate();
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [nome, setNome] = useState('');
+  // Pega referencias do Unform para salvar os dados e usar em outro lugar
+  const formRef = useRef<FormHandles>(null);
 
+  // Mostrar barra de carregamento na tela.
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Variavel constante criada para usar no useEffect 
+  const [nome, setNome] = useState('');
 
   //Para carregar os dados de outra tela e armazenar a ser utilizado use useEffect
   useEffect(() => {
@@ -38,10 +50,12 @@ export const DetalheDePessoas: React.FC = () => {
     }
   }, [id]);
 
-  const handleSave = () => {
-    console.log('Save');
+  // Constante criada para salvar os dados no backend.
+  const handleSave = (dados: IFormData) => {
+    console.log(dados);
   };
 
+  // Constante criada para apagar os dados do backend
   const handleDelete = (id: number) => {
     if (confirm('Deseja realmente apagar o registro?')) {
       PessoasServices.deleteById(id)
@@ -57,7 +71,9 @@ export const DetalheDePessoas: React.FC = () => {
     }
   };
 
+  // RETORNO DA CONSTANTE EXPORT DetalheDePessoas
   return (
+    // Importando base da pagina e criando os objetos
     <LayoutBaseDePagina
       titulo={id === 'adicionar' ? 'Adicionando nova pessoa' : nome}
       barraDeFerramentas={
@@ -68,9 +84,10 @@ export const DetalheDePessoas: React.FC = () => {
 
           aoClicarEmNovo={() => navigate('/pessoas/detalhe/adicionar')}
           aoClicarEmVoltar={() => navigate('/pessoas')}
-          aoClicarEmSalvar={handleSave}
-          aoClicarEmSalvarEFechar={handleSave}
           aoClicarEmApagar={() => handleDelete(Number(id))}
+
+          aoClicarEmSalvar={() => formRef.current?.submitForm()}
+          aoClicarEmSalvarEFechar={() => formRef.current?.submitForm()}
         />
       }
     >
@@ -78,10 +95,10 @@ export const DetalheDePessoas: React.FC = () => {
         <LinearProgress variant='indeterminate' />
       )}
 
-      <Form onSubmit={(dados) => console.log(dados)}>
+      <Form ref={formRef} onSubmit={handleSave}>
         <VTextField name='nomeCompeto' />
-
-        <button type='submit'>Submit</button>
+        <VTextField name='email' />
+        <VTextField name='cidadeId' />
       </Form>
 
     </LayoutBaseDePagina >

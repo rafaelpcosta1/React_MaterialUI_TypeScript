@@ -1,12 +1,6 @@
 {
   "pessoas": [
     {
-      "id": 2,
-      "email": "jorge@teste.com.br",
-      "cidadeId": 3,
-      "nomeCompleto": "Jorge De Souza"
-    },
-    {
       "id": 4,
       "email": "thiago@teste.com.br",
       "cidadeId": 2,
