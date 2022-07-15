@@ -1,17 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Box, Grid, LinearProgress, Paper, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import { LinearProgress } from '@mui/material';
-import { FormHandles } from '@unform/core';
-import { Form } from '@unform/web';
 
 import { PessoasServices } from '../../shared/services/api/pessoas/PessoasServices';
+import { VTextField, VForm, useVForm } from '../../shared/forms';
 import { FerramentasDeDetalhe } from '../../shared/components';
 import { LayoutBaseDePagina } from '../../shared/layouts';
-import { VTextField } from '../../shared/forms';
 
 interface IFormData {
   email: string;
-  cidadeId: string;
+  cidadeId: number;
   nomeCompleto: string;
 }
 
@@ -21,7 +19,7 @@ export const DetalheDePessoas: React.FC = () => {
   const navigate = useNavigate();
 
   // Pega referencias do Unform para salvar os dados e usar em outro lugar
-  const formRef = useRef<FormHandles>(null);
+  const { formRef } = useVForm();
 
   // Mostrar barra de carregamento na tela.
   const [isLoading, setIsLoading] = useState(false);
@@ -44,15 +42,47 @@ export const DetalheDePessoas: React.FC = () => {
           }
           else {
             setNome(result.nomeCompleto);
-            console.log(result);
+            formRef.current?.setData(result);
           }
         });
+    }
+    else {
+      formRef.current?.setData({
+        nomeCompleto: '',
+        cidadeId: '',
+        email: '',
+      });
     }
   }, [id]);
 
   // Constante criada para salvar os dados no backend.
   const handleSave = (dados: IFormData) => {
-    console.log(dados);
+    setIsLoading(true);
+
+    // Criando usuario na base de dados pelo BackEnd
+    if (id === 'adicionar') {
+      PessoasServices.create(dados)
+        .then((result) => {
+          setIsLoading(false);
+
+          if (result instanceof Error) {
+            alert(result.message);
+          } else {
+            navigate(`/pessoas/detalhe/${result}`);
+          }
+        });
+    }
+    // Atualizando usuario na base de dados pelo BackEnd
+    else {
+      PessoasServices.updateById(Number(id), { id: Number(id), ...dados })
+        .then((result) => {
+          setIsLoading(false);
+
+          if (result instanceof Error) {
+            alert(result.message);
+          }
+        });
+    }
   };
 
   // Constante criada para apagar os dados do backend
@@ -91,15 +121,68 @@ export const DetalheDePessoas: React.FC = () => {
         />
       }
     >
-      {isLoading && (
-        <LinearProgress variant='indeterminate' />
-      )}
 
-      <Form ref={formRef} onSubmit={handleSave}>
-        <VTextField name='nomeCompeto' />
-        <VTextField name='email' />
-        <VTextField name='cidadeId' />
-      </Form>
+      {/*OBJETOS FORMULARIOS DA TELA*/}
+
+      <VForm ref={formRef} onSubmit={handleSave}>
+        <Box margin={1} display='flex' flexDirection='column' component={Paper} variant='outlined'>
+
+          <Grid container direction='column' padding={2} spacing={2}>
+
+            <Grid>
+              {/*BARRA DE CARREGAMENTO DA TELA*/}
+
+              {isLoading && (
+                <LinearProgress variant='indeterminate' />
+              )}
+            </Grid>
+
+            <Grid item>
+              {id === 'adicionar' && (
+                <Typography variant='h6'>Novo usuário</Typography>
+              )}
+              {id !== 'adicionar' && (
+                <Typography variant='h6'>Usuário</Typography>
+              )}
+            </Grid>
+            <Grid container item direction='row'>
+              <Grid item xs={12} sm={12} md={6} lg={4} xl={2}>
+                <VTextField
+                  fullWidth
+                  label='Nome completo'
+                  disabled={isLoading}
+                  name='nomeCompleto'
+                  onChange={e => setNome(e.target.value)}
+                />
+              </Grid>
+            </Grid>
+
+            <Grid container item direction='row'>
+              <Grid item xs={12} sm={12} md={6} lg={4} xl={2}>
+                <VTextField
+                  fullWidth
+                  label='E-mail'
+                  disabled={isLoading}
+                  name='email'
+                />
+              </Grid>
+            </Grid>
+
+            <Grid container item direction='row'>
+              <Grid item xs={12} sm={12} md={6} lg={4} xl={2}>
+                <VTextField
+                  fullWidth
+                  label='Cidade'
+                  disabled={isLoading}
+                  name='cidadeId'
+                />
+              </Grid>
+            </Grid>
+
+          </Grid>
+
+        </Box>
+      </VForm>
 
     </LayoutBaseDePagina >
   );

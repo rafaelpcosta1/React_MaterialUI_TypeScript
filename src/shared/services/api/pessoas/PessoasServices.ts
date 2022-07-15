@@ -13,7 +13,7 @@ export interface IDetalhePessoa {
   id: number;
   email: string;
   nomeCompleto: string;
-  cidadeid: number;
+  cidadeId: number;
 }
 
 type TPessoasComTotalCount = {
