@@ -1,17 +1,26 @@
 import { useEffect, useState } from 'react';
 import { Box, Grid, LinearProgress, Paper, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
+import * as yup from 'yup';
 
 import { PessoasServices } from '../../shared/services/api/pessoas/PessoasServices';
-import { VTextField, VForm, useVForm } from '../../shared/forms';
+import { VTextField, VForm, useVForm, IVFormErros } from '../../shared/forms';
 import { FerramentasDeDetalhe } from '../../shared/components';
 import { LayoutBaseDePagina } from '../../shared/layouts';
+
 
 interface IFormData {
   email: string;
   cidadeId: number;
   nomeCompleto: string;
 }
+
+// Esquema de validação do formulario
+const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
+  nomeCompleto: yup.string().required().min(3),
+  email: yup.string().required().email(),
+  cidadeId: yup.number().required(),
+});
 
 export const DetalheDePessoas: React.FC = () => {
   // Variaveis constantes utilizada para vavegar entre as paginas e fornecer o ID
@@ -57,41 +66,59 @@ export const DetalheDePessoas: React.FC = () => {
 
   // Constante criada para salvar os dados no backend.
   const handleSave = (dados: IFormData) => {
-    setIsLoading(true);
 
-    // Criando usuario na base de dados pelo BackEnd
-    if (id === 'adicionar') {
-      PessoasServices.create(dados)
-        .then((result) => {
-          setIsLoading(false);
+    // Aplicando a validação de erro
+    formValidationSchema.
+      validate(dados, { abortEarly: false })
+      .then((dadosValidados) => {
+        setIsLoading(true);
 
-          if (result instanceof Error) {
-            alert(result.message);
-          } else {
-            if (isSaveAndClose()) {
-              navigate('/pessoas');
-            } else {
-              navigate(`/pessoas/detalhe/${result}`);
-            }
-          }
+        // Criando usuario na base de dados pelo BackEnd
+        if (id === 'adicionar') {
+          PessoasServices.create(dadosValidados)
+            .then((result) => {
+              setIsLoading(false);
+
+              if (result instanceof Error) {
+                alert(result.message);
+              } else {
+                if (isSaveAndClose()) {
+                  navigate('/pessoas');
+                } else {
+                  navigate(`/pessoas/detalhe/${result}`);
+                }
+              }
+            });
+        }
+        // Atualizando usuario na base de dados pelo BackEnd
+        else {
+          PessoasServices.updateById(Number(id), { id: Number(id), ...dadosValidados })
+            .then((result) => {
+              setIsLoading(false);
+
+              if (result instanceof Error) {
+                alert(result.message);
+              }
+              else {
+                if (isSaveAndClose()) {
+                  navigate('/pessoas');
+                }
+              }
+            });
+        }
+      })
+      .catch((errors: yup.ValidationError) => {
+        const validationErrors: IVFormErros = {};
+
+        errors.inner.forEach(error => {
+          if (!error.path) return;
+
+          validationErrors[error.path] = error.message;
         });
-    }
-    // Atualizando usuario na base de dados pelo BackEnd
-    else {
-      PessoasServices.updateById(Number(id), { id: Number(id), ...dados })
-        .then((result) => {
-          setIsLoading(false);
 
-          if (result instanceof Error) {
-            alert(result.message);
-          }
-          else {
-            if (isSaveAndClose()) {
-              navigate('/pessoas');
-            }
-          }
-        });
-    }
+        console.log(validationErrors);
+        formRef.current?.setErrors(validationErrors);
+      });
   };
 
   // Constante criada para apagar os dados do backend
