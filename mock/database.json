@@ -1,12 +1,6 @@
 {
   "pessoas": [
     {
-      "id": 4,
-      "nomeCompleto": "Thiago Ambrosio Martins",
-      "email": "thiago@teste.com.br",
-      "cidadeId": 2
-    },
-    {
       "id": 6,
       "email": "mauro@teste.com.br",
       "cidadeId": 1,
@@ -53,12 +47,6 @@
       "nomeCompleto": "Leila Monica Ferreira de Sousa Freitas",
       "email": "mariaeloahleylla@gmail.com",
       "cidadeId": "18"
-    },
-    {
-      "id": 15,
-      "nomeCompleto": "Felipe Pereira da Costa",
-      "email": "felipe@gmail.com",
-      "cidadeId": "16"
     },
     {
       "nomeCompleto": "Rafael Pereira da Costa",

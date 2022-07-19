@@ -19,7 +19,7 @@ export const DetalheDePessoas: React.FC = () => {
   const navigate = useNavigate();
 
   // Pega referencias do Unform para salvar os dados e usar em outro lugar
-  const { formRef } = useVForm();
+  const { formRef, save, saveAndClose, isSaveAndClose } = useVForm();
 
   // Mostrar barra de carregamento na tela.
   const [isLoading, setIsLoading] = useState(false);
@@ -68,7 +68,11 @@ export const DetalheDePessoas: React.FC = () => {
           if (result instanceof Error) {
             alert(result.message);
           } else {
-            navigate(`/pessoas/detalhe/${result}`);
+            if (isSaveAndClose()) {
+              navigate('/pessoas');
+            } else {
+              navigate(`/pessoas/detalhe/${result}`);
+            }
           }
         });
     }
@@ -80,6 +84,11 @@ export const DetalheDePessoas: React.FC = () => {
 
           if (result instanceof Error) {
             alert(result.message);
+          }
+          else {
+            if (isSaveAndClose()) {
+              navigate('/pessoas');
+            }
           }
         });
     }
@@ -116,8 +125,8 @@ export const DetalheDePessoas: React.FC = () => {
           aoClicarEmVoltar={() => navigate('/pessoas')}
           aoClicarEmApagar={() => handleDelete(Number(id))}
 
-          aoClicarEmSalvar={() => formRef.current?.submitForm()}
-          aoClicarEmSalvarEFechar={() => formRef.current?.submitForm()}
+          aoClicarEmSalvar={save}
+          aoClicarEmSalvarEFechar={saveAndClose}
         />
       }
     >
