@@ -3,26 +3,22 @@ import { Box, Grid, LinearProgress, Paper, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as yup from 'yup';
 
-import { PessoasServices } from '../../shared/services/api/pessoas/PessoasServices';
+import { CidadesServices } from '../../shared/services/api/cidades/CidadesServices';
 import { VTextField, VForm, useVForm, IVFormErros } from '../../shared/forms';
 import { FerramentasDeDetalhe } from '../../shared/components';
 import { LayoutBaseDePagina } from '../../shared/layouts';
 
 
 interface IFormData {
-  email: string;
-  cidadeId: number;
-  nomeCompleto: string;
+  nome: string;
 }
 
 // Esquema de validação do formulario
 const formValidationSchema: yup.SchemaOf<IFormData> = yup.object().shape({
-  nomeCompleto: yup.string().required().min(3),
-  email: yup.string().required().email(),
-  cidadeId: yup.number().required().min(1),
+  nome: yup.string().required().min(3),
 });
 
-export const DetalheDePessoas: React.FC = () => {
+export const DetalheDeCidades: React.FC = () => {
   // Variaveis constantes utilizada para vavegar entre as paginas e fornecer o ID
   const { id } = useParams<'id'>();
   const navigate = useNavigate();
@@ -41,25 +37,23 @@ export const DetalheDePessoas: React.FC = () => {
     if (id !== 'adicionar') {
       setIsLoading(true);
 
-      PessoasServices.getById(Number(id))
+      CidadesServices.getById(Number(id))
         .then((result) => {
           setIsLoading(false);
 
           if (result instanceof Error) {
             alert(result.message);
-            navigate('/pessoas');
+            navigate('/cidades');
           }
           else {
-            setNome(result.nomeCompleto);
+            setNome(result.nome);
             formRef.current?.setData(result);
           }
         });
     }
     else {
       formRef.current?.setData({
-        nomeCompleto: '',
-        cidadeId: '',
-        email: '',
+        nome: '',
       });
     }
   }, [id]);
@@ -75,7 +69,7 @@ export const DetalheDePessoas: React.FC = () => {
 
         // Criando usuario na base de dados pelo BackEnd
         if (id === 'adicionar') {
-          PessoasServices.create(dadosValidados)
+          CidadesServices.create(dadosValidados)
             .then((result) => {
               setIsLoading(false);
 
@@ -83,16 +77,16 @@ export const DetalheDePessoas: React.FC = () => {
                 alert(result.message);
               } else {
                 if (isSaveAndClose()) {
-                  navigate('/pessoas');
+                  navigate('/cidades');
                 } else {
-                  navigate(`/pessoas/detalhe/${result}`);
+                  navigate(`/cidades/detalhe/${result}`);
                 }
               }
             });
         }
         // Atualizando usuario na base de dados pelo BackEnd
         else {
-          PessoasServices.updateById(Number(id), { id: Number(id), ...dadosValidados })
+          CidadesServices.updateById(Number(id), { id: Number(id), ...dadosValidados })
             .then((result) => {
               setIsLoading(false);
 
@@ -101,7 +95,7 @@ export const DetalheDePessoas: React.FC = () => {
               }
               else {
                 if (isSaveAndClose()) {
-                  navigate('/pessoas');
+                  navigate('/cidades');
                 }
               }
             });
@@ -124,33 +118,33 @@ export const DetalheDePessoas: React.FC = () => {
   // Constante criada para apagar os dados do backend
   const handleDelete = (id: number) => {
     if (confirm('Deseja realmente apagar o registro?')) {
-      PessoasServices.deleteById(id)
+      CidadesServices.deleteById(id)
         .then(result => {
           if (result instanceof Error) {
             alert(result.message);
           }
           else {
             alert('Registro apagado com sucesso!');
-            navigate('/pessoas');
+            navigate('/cidades');
           }
         });
     }
   };
 
-  // RETORNO DA CONSTANTE EXPORT DetalheDePessoas
+  // RETORNO DA CONSTANTE EXPORT DetalheDeCidades
   return (
     // Importando base da pagina e criando os objetos
     <LayoutBaseDePagina
-      titulo={id === 'adicionar' ? 'Adicionando nova pessoa' : nome}
+      titulo={id === 'adicionar' ? 'Adicionando nova cidade' : nome}
       barraDeFerramentas={
         <FerramentasDeDetalhe
           mostrarBotaoSalavarEFechar
           mostrarBotaoNovo={id !== 'adicionar'}
           mostrarBotaoApagar={id !== 'adicionar'}
 
-          aoClicarEmNovo={() => navigate('/pessoas/detalhe/adicionar')}
-          aoClicarEmVoltar={() => navigate('/pessoas')}
+          aoClicarEmNovo={() => navigate('/cidades/detalhe/adicionar')}
           aoClicarEmApagar={() => handleDelete(Number(id))}
+          aoClicarEmVoltar={() => navigate('/cidades')}
 
           aoClicarEmSalvar={save}
           aoClicarEmSalvarEFechar={saveAndClose}
@@ -175,42 +169,20 @@ export const DetalheDePessoas: React.FC = () => {
 
             <Grid item>
               {id === 'adicionar' && (
-                <Typography variant='h6'>Novo usuário</Typography>
+                <Typography variant='h6'>Nova cidade</Typography>
               )}
               {id !== 'adicionar' && (
-                <Typography variant='h6'>Usuário</Typography>
+                <Typography variant='h6'>Cidade</Typography>
               )}
             </Grid>
             <Grid container item direction='row'>
               <Grid item xs={12} sm={12} md={6} lg={4} xl={2}>
                 <VTextField
                   fullWidth
-                  label='Nome completo'
+                  label='Nome'
                   disabled={isLoading}
-                  name='nomeCompleto'
+                  name='nome'
                   onChange={e => setNome(e.target.value)}
-                />
-              </Grid>
-            </Grid>
-
-            <Grid container item direction='row'>
-              <Grid item xs={12} sm={12} md={6} lg={4} xl={2}>
-                <VTextField
-                  fullWidth
-                  label='E-mail'
-                  disabled={isLoading}
-                  name='email'
-                />
-              </Grid>
-            </Grid>
-
-            <Grid container item direction='row'>
-              <Grid item xs={12} sm={12} md={6} lg={4} xl={2}>
-                <VTextField
-                  fullWidth
-                  label='Cidade'
-                  disabled={isLoading}
-                  name='cidadeId'
                 />
               </Grid>
             </Grid>

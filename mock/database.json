@@ -54,5 +54,19 @@
       "cidadeId": "11",
       "id": 16
     }
+  ],
+  "cidades": [
+    {
+      "id": 1,
+      "nome": "Porto Alegre"
+    },
+    {
+      "nome": "Brasilia",
+      "id": 2
+    },
+    {
+      "nome": "Ceilândia",
+      "id": 3
+    }
   ]
 }
