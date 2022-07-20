@@ -80,7 +80,6 @@ export const ListagemDePessoas: React.FC = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>id</TableCell>
               <TableCell>Nome Completo</TableCell>
               <TableCell>E-mail</TableCell>
               <TableCell>Ações</TableCell>
@@ -91,7 +90,6 @@ export const ListagemDePessoas: React.FC = () => {
 
             {rows.map(row => (
               <TableRow key={row.id}>
-                <TableCell>{row.id}</TableCell>
                 <TableCell>{row.nomeCompleto}</TableCell>
                 <TableCell>{row.email}</TableCell>
                 <TableCell width={80}>
