@@ -58,8 +58,8 @@ export const DetalheDePessoas: React.FC = () => {
     }
     else {
       formRef.current?.setData({
+        cidadeId: undefined,
         nomeCompleto: '',
-        cidadeId: '',
         email: '',
       });
     }
