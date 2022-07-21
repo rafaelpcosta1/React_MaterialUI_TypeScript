@@ -104,5 +104,8 @@
       "nome": "Taboquinha",
       "id": 9
     }
-  ]
+  ],
+  "auth": {
+    "accessToken": "aaaaaaaaa.bbbbbbbbb.ccccccccc"
+  }
 }
